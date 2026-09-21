@@ -1,0 +1,41 @@
+# ══════════════════════════════════════════════════════════════════════
+# SpeedRadius — files that must never be committed.
+# The GitHub repo is PUBLIC, and these contain live credentials or customer
+# personal data (phone numbers, usernames and plaintext passwords).
+# ══════════════════════════════════════════════════════════════════════
+
+# ── Local configuration (DB host/user/password) ───────────────────────
+config.php
+
+# ── API keys and tokens ───────────────────────────────────────────────
+system/blessed_api_key.txt
+system/bytewave_api_token.txt
+*.key
+*.session
+
+# ── Database dumps — contain tbl_customers / tbl_users data ───────────
+backup/
+
+# ── Customer-uploaded and generated content ───────────────────────────
+system/uploads/photos/
+system/uploads/go_whatsapp/
+system/uploads/whatsapp/
+system/uploads/whatsapp_pro/
+system/uploads/_sysfrm_tmp_/
+system/uploads/notifications*.json
+
+# ── Runtime state and logs ────────────────────────────────────────────
+*.log
+system/cache/*
+!system/cache/.gitkeep
+system/uploads/cron_last_run.txt
+system/uploads/whatsapp/*_status.txt
+
+# ── OS / editor noise ─────────────────────────────────────────────────
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+*~
+*.bak
+*.orig
