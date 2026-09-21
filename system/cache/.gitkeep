@@ -1,0 +1,10 @@
+Placeholder so the system/cache/ directory exists in a fresh clone.
+
+The application requires this folder to be present and writable:
+  - system/cron.php exits with "Directory ... does not exist" if it is missing
+  - update.php refuses to run ("Folder system/cache/ is not writable")
+  - system/helpers/database_updates.php throws "The system cache directory is not writable"
+
+Nothing in the codebase creates it, so it is kept in the repository via this
+file while its contents (cache JSON/TEMP files, updates.done.json) stay ignored
+by .gitignore.

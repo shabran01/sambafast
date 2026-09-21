@@ -24,9 +24,22 @@ system/uploads/whatsapp_pro/
 system/uploads/_sysfrm_tmp_/
 system/uploads/notifications*.json
 
+# ── Generated template cache ──────────────────────────────────────────
+# Smarty compiles templates into ui/compiled/ on demand, and update.php
+# empties that folder at the end of every update — pure build artefacts.
+# No placeholder file here on purpose: update.php unlinks every file in the
+# folder, so a .gitkeep would just get deleted again and reintroduce the churn.
+# Smarty re-creates the directory itself (mkdir() in its writeFile() runtime),
+# so the folder is not needed in the repository.
+ui/compiled/
+
 # ── Runtime state and logs ────────────────────────────────────────────
 *.log
 system/cache/*
+# system/cache/ must EXIST: cron.php exits when it is missing, and both
+# update.php and the Community updater refuse to run when it is absent or not
+# writable. Nothing in the app creates it, so this placeholder keeps the folder
+# itself tracked while its contents stay ignored.
 !system/cache/.gitkeep
 system/uploads/cron_last_run.txt
 system/uploads/whatsapp/*_status.txt
