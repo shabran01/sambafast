@@ -106,7 +106,7 @@
           </form>
           <a href="./update.php" target="_blank" class="cm-btn cm-btn-amber">&#x2B06; Install Latest</a>
           <a href="./CHANGELOG.md" target="_blank" class="cm-btn cm-btn-ghost">&#x1F4C4; Changelog</a>
-          <a href="https://github.com/shabran01/SpeedRadius_Advanced/blob/main/CHANGELOG.md" target="_blank" class="cm-btn cm-btn-ghost">&#x1F419; Repo Changelog</a>
+          <a href="https://github.com/shabran01/sambafast/blob/main/CHANGELOG.md" target="_blank" class="cm-btn cm-btn-ghost">&#x1F419; Repo Changelog</a>
         </div>
       </div>
 
@@ -148,7 +148,7 @@
 <script>
 {literal}
 window.addEventListener('DOMContentLoaded', function() {
-    $.getJSON("https://raw.githubusercontent.com/shabran01/SpeedRadius_Advanced/main/version.json?" + Math.random(), function(data) {
+    $.getJSON("https://raw.githubusercontent.com/shabran01/sambafast/main/version.json?" + Math.random(), function(data) {
         $('#latestVersion').text('v' + data.version);
     }).fail(function() {
         $('#latestVersion').text('N/A');

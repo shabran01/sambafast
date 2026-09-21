@@ -131,14 +131,14 @@ All release notes are maintained here:
 - Paid support is available starting at **Ksh 500 / $5** per request.
 - Contact for support: **SpeedRadius** — [speedcomwifi.co.ke](https://speedcomwifi.co.ke)
 
-Ask anything for free in the [Discussions](https://github.com/shabran01/SpeedRadius_Advanced/discussions) or join the [WhatsApp Support Group](https://chat.whatsapp.com/HjnLYIEN6h0A0KMXbfNYP5).
+Ask anything for free in the [Discussions](https://github.com/shabran01/sambafast/discussions) or join the [WhatsApp Support Group](https://chat.whatsapp.com/HjnLYIEN6h0A0KMXbfNYP5).
 
 ---
 
 ## 📬 Contact
 
 - **Website:** [speedcomwifi.co.ke](https://speedcomwifi.co.ke)
-- **GitHub:** [shabran01/SpeedRadius_Advanced](https://github.com/shabran01/SpeedRadius_Advanced)
+- **GitHub:** [shabran01/sambafast](https://github.com/shabran01/sambafast)
 - **Developer:** Shabran Kweyu
 
 ---

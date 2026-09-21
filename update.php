@@ -1,7 +1,7 @@
 <?php
  
 /**
- * PHP Mikrotik Billing (https://github.com/shabran01/SpeedRadius_Advanced/)
+ * PHP Mikrotik Billing (https://github.com/shabran01/sambafast/)
  *
  * This script is for updating SpeedRadius
  **/
@@ -49,8 +49,8 @@ if (!extension_loaded('zip')) {
 }
 
 
-$file = pathFixer('system/cache/SpeedRadius_Advanced.zip');
-$folder = pathFixer('system/cache/SpeedRadius_Advanced-' . basename($update_url, ".zip") . '/');
+$file = pathFixer('system/cache/sambafast.zip');
+$folder = pathFixer('system/cache/sambafast-' . basename($update_url, ".zip") . '/');
 
 if (empty($step)) {
     $step++;
@@ -434,7 +434,7 @@ function deleteFolder($path)
     <?php } ?>
   </div>
 
-  <div class="foot">Powered by <a href="https://github.com/shabran01/SpeedRadius_Advanced" target="_blank" rel="noopener">SpeedRadius</a> &middot; Shabran Kweyu</div>
+  <div class="foot">Powered by <a href="https://github.com/shabran01/sambafast" target="_blank" rel="noopener">SpeedRadius</a> &middot; Shabran Kweyu</div>
 </div>
 </body>
 </html>
