@@ -2,6 +2,25 @@
 
  # CHANGELOG
 
+## [2.2.30] - 2026-09-22
+
+---
+
+### CHANGED: Shared Value Chips on the Customer Profile and Package Cards
+
+**`ui/ui/customers-view.tpl`**
+
+- The left-hand profile card was a wall of plain right-aligned text with a single coloured pill on Status. It now uses the same chip system as the package card, so the two cards read as one design:
+  - **Status** and **Auto Renewal** → green/red pills
+  - **Service Type** → blue chip
+  - **Balance** → amber chip (money, matching how Expires On is treated on the package card)
+  - **Username**, **Phone Number**, **Email**, **Account Type**, **PPPOE Username**, **PPPOE Remote IP**, plus the package card's **Bandwidth** and recharge method → slate monospace chips, marking them as identifiers you would copy out rather than prose
+  - **City**, **Created On**, **Last Login** stay plain — dates and place names do not benefit from being boxed
+- The chip classes (`sr-chip`, `sr-chip-ok`, `sr-chip-bad`, `sr-chip-info`, `sr-chip-money`, `sr-chip-mute`, `sr-chip-mono`) are defined once and drive both cards, instead of each card carrying its own colour rules that could drift apart. **Status** moved off `sr-status-pill` / `sr-status-on` / `sr-status-off` onto `sr-chip-ok` / `sr-chip-bad`; the old rules are left in place since other markup may still use them.
+- Every label gained a small icon in a fixed 14px slot, matching the package card. The icons are deliberately low-contrast (`#cbd5e1`) so they aid scanning without competing with the values.
+- Monospace chips are capped at `max-width: 60%` with `min-width: 0` and an ellipsis, so a long email address truncates cleanly instead of forcing the row wide. `min-width: 0` matters specifically because a flex item defaults to `min-width: auto` and would otherwise refuse to shrink, defeating the ellipsis.
+- **Auto Renewal**, and the package card's **Active** flag, displayed a bare lowercase `yes` / `no`; both now show `Yes` / `No` via `Lang::T()`, so the two cards render these the same way.
+
 ## [2.2.29] - 2026-09-22
 
 ---
@@ -14,7 +33,7 @@
 - **Destructive sync.** `add_customer()` deletes the hotspot user together with their active session and then re-adds them, so every online customer in a sync was disconnected and had their counters reset. `sync_customer()`, which exists on both device classes and simply re-points the existing user at the plan's profile, had no call sites anywhere in the codebase. `sync-process` now prefers it and falls back to `add_customer()` only when the device does not provide one (`MikrotikPppoe::sync_customer()` delegates to `add_customer()`, so PPPoE behaviour is unchanged).
 - **Unstable paging.** The batch query used `limit(10)->offset($n)` with no `ORDER BY`, so MySQL was free to return rows in any order and customers could be skipped or synced twice between batches. It is now ordered by `id`.
 - **`hasMore` mismatch.** The flag was computed from the requested `limit` rather than the rows actually returned, while the caller advances its offset by `stats.processed`. It now uses the real batch size.
-- **Unbounded timeout replay.** On a client timeout the page re-requested the same offset with no retry cap, and the UI stayed locked if that kept happening. The arithmetic made this near-certain: `MikrotikHotspot::getClient()` makes 3 connect attempts of 5s with 2s delays, so a dead router costs ~19s per customer and a batch of 10 needs ~190s \u2014 against a 60s client timeout and a 120s `set_time_limit`. The server limit is now 300s, the client timeout 330s so that it exceeds the server, and retries are capped at 2 before stopping with the offset and a hint on how to resume.
+- **Unbounded timeout replay.** On a client timeout the page re-requested the same offset with no retry cap, and the UI stayed locked if that kept happening. The arithmetic made this near-certain: `MikrotikHotspot::getClient()` makes 3 connect attempts of 5s with 2s delays, so a dead router costs ~19s per customer and a batch of 10 needs ~190s — against a 60s client timeout and a 120s `set_time_limit`. The server limit is now 300s, the client timeout 330s so that it exceeds the server, and retries are capped at 2 before stopping with the offset and a hint on how to resume.
 - **Missing CSRF protection.** The endpoint rewrites router state over a plain GET, so any page an authenticated admin visited could trigger a sync with an `<img>` tag. It now validates a CSRF token, which `plan/sync` supplies to every batch request. `Csrf::check()` does not consume the token, so one token covers a whole run, and the check remains a no-op unless `csrf_enabled` is `yes`.
 
 ## [2.2.28] - 2026-09-22

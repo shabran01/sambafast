@@ -181,6 +181,56 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
 }
 
+/* ── Value chips ─────────────────────────────────────────────────────── */
+/* Shared by the profile card and the package cards, so one colour definition
+   drives both instead of two that could drift apart. Declared after the
+   generic ".list-group-item > span" rule and with higher specificity, which is
+   why the value colour below wins over it. */
+.sr-cust .box-profile .list-group-item > span.sr-chip {
+    display: inline-block;
+    margin-left: auto;
+    padding: 2px 9px;
+    border: 0;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.6;
+    text-align: right;
+    white-space: nowrap;
+    max-width: 60%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Identifiers you would copy out rather than prose */
+.sr-cust .box-profile .list-group-item > span.sr-chip-mono {
+    background: #f8fafc;
+    border: 1px solid #e6ebf2;
+    color: #334155;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    font-weight: 600;
+}
+/* min-width:0 above matters specifically because a flex item defaults to
+   min-width:auto and would otherwise refuse to shrink, defeating the ellipsis
+   on a long email address. */
+.sr-cust .box-profile .list-group-item > span.sr-chip-ok    { background: #dcfce7; color: #15803d; }
+.sr-cust .box-profile .list-group-item > span.sr-chip-bad   { background: #fee2e2; color: #b91c1c; }
+.sr-cust .box-profile .list-group-item > span.sr-chip-info  { background: #dbeafe; color: #1d4ed8; }
+.sr-cust .box-profile .list-group-item > span.sr-chip-money { background: #fef3c7; color: #b45309; }
+.sr-cust .box-profile .list-group-item > span.sr-chip-mute  { background: #f1f5f9; color: #475569; }
+
+/* Label icon slot: a fixed 14px column so the icons line up down the card, and
+   low-contrast so they aid scanning without competing with the values. */
+.sr-cust .box-profile .list-group-item > b > i.sr-ico {
+    display: inline-block;
+    width: 14px;
+    margin-right: 2px;
+    color: #cbd5e1;
+    font-size: 12px;
+    text-align: center;
+}
+
 /* ── v2.2.21/v2.2.22 Buttons — flat, no 3D bevel ─────────────────────── */
 .sr-cust .btn-3d {
     position: relative;
@@ -687,25 +737,25 @@
                 <h3 class="profile-username text-center">{$d['fullname']}</h3>
                 <ul class="list-group list-group-unbordered">
                     <li class="list-group-item">
-                        <b>{Lang::T('Status')}</b> <span
-                            class="pull-right sr-status-pill {if $d['status'] !='Active'}sr-status-off{else}sr-status-on{/if}">{Lang::T($d['status'])}</span>
+                        <b><i class="fa fa-circle sr-ico"></i> {Lang::T('Status')}</b> <span
+                            class="pull-right sr-chip {if $d['status'] !='Active'}sr-chip-bad{else}sr-chip-ok{/if}">{Lang::T($d['status'])}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Username')}</b> <span class="pull-right">{$d['username']}</span>
+                        <b><i class="fa fa-user sr-ico"></i> {Lang::T('Username')}</b> <span class="pull-right sr-chip sr-chip-mono">{$d['username']}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Phone Number')}</b> <span class="pull-right">{$d['phonenumber']}</span>
+                        <b><i class="fa fa-phone sr-ico"></i> {Lang::T('Phone Number')}</b> <span class="pull-right sr-chip sr-chip-mono">{$d['phonenumber']}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Email')}</b> <span class="pull-right">{$d['email']}</span>
+                        <b><i class="fa fa-envelope-o sr-ico"></i> {Lang::T('Email')}</b> <span class="pull-right sr-chip sr-chip-mono">{$d['email']}</span>
                     </li>
                     <li class="list-group-item">{Lang::nl2br($d['address'])}</li>
                     <li class="list-group-item">
-                        <b>{Lang::T('City')}</b> <span class="pull-right">{$d['city']}</span>
+                        <b><i class="fa fa-map-marker sr-ico"></i> {Lang::T('City')}</b> <span class="pull-right">{$d['city']}</span>
                     </li>
                     {if in_array($_admin['user_type'],['SuperAdmin','Admin'])}
                         <li class="list-group-item">
-                            <b>{Lang::T('Password')}</b> <input type="password" value="{$d['password']}"
+                            <b><i class="fa fa-key sr-ico"></i> {Lang::T('Password')}</b> <input type="password" value="{$d['password']}"
                                 class="sr-secret"
                                 onmouseleave="this.type = 'password'" onmouseenter="this.type = 'text'"
                                 onclick="this.select()">
@@ -713,12 +763,12 @@
                     {/if}
                     {if $d['pppoe_username'] != ''}
                         <li class="list-group-item">
-                            <b>PPPOE {Lang::T('Username')}</b> <span class="pull-right">{$d['pppoe_username']}</span>
+                            <b><i class="fa fa-plug sr-ico"></i> PPPOE {Lang::T('Username')}</b> <span class="pull-right sr-chip sr-chip-mono">{$d['pppoe_username']}</span>
                         </li>
                     {/if}
                     {if $d['pppoe_password'] != '' && in_array($_admin['user_type'],['SuperAdmin','Admin'])}
                         <li class="list-group-item">
-                            <b>PPPOE {Lang::T('Password')}</b> <input type="password" value="{$d['pppoe_password']}"
+                            <b><i class="fa fa-key sr-ico"></i> PPPOE {Lang::T('Password')}</b> <input type="password" value="{$d['pppoe_password']}"
                                 class="sr-secret"
                                 onmouseleave="this.type = 'password'" onmouseenter="this.type = 'text'"
                                 onclick="this.select()">
@@ -726,7 +776,7 @@
                     {/if}
                     {if $d['pppoe_ip'] != ''}
                         <li class="list-group-item">
-                            <b>PPPOE Remote IP</b> <span class="pull-right">{$d['pppoe_ip']}</span>
+                            <b><i class="fa fa-globe sr-ico"></i> PPPOE Remote IP</b> <span class="pull-right sr-chip sr-chip-mono">{$d['pppoe_ip']}</span>
                         </li>
                     {/if}
                     <!--Customers Attributes view start -->
@@ -745,30 +795,29 @@
                     {/if}
                     <!--Customers Attributes view end -->
                     <li class="list-group-item">
-                        <b>{Lang::T('Service Type')}</b> <span class="pull-right">{Lang::T($d['service_type'])}</span>
+                        <b><i class="fa fa-tag sr-ico"></i> {Lang::T('Service Type')}</b> <span class="pull-right sr-chip sr-chip-info">{Lang::T($d['service_type'])}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Account Type')}</b> <span class="pull-right">{Lang::T($d['account_type'])}</span>
+                        <b><i class="fa fa-id-card-o sr-ico"></i> {Lang::T('Account Type')}</b> <span class="pull-right sr-chip sr-chip-mono">{Lang::T($d['account_type'])}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Balance')}</b> <span class="pull-right">{Lang::moneyFormat($d['balance'])}</span>
+                        <b><i class="fa fa-money sr-ico"></i> {Lang::T('Balance')}</b> <span class="pull-right sr-chip sr-chip-money">{Lang::moneyFormat($d['balance'])}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Auto Renewal')}</b> <span class="pull-right">{if
-                            $d['auto_renewal']}yes{else}no
-                            {/if}</span>
+                        <b><i class="fa fa-refresh sr-ico"></i> {Lang::T('Auto Renewal')}</b> <span
+                            class="pull-right sr-chip {if $d['auto_renewal']}sr-chip-ok{else}sr-chip-bad{/if}">{if $d['auto_renewal']}{Lang::T('Yes')}{else}{Lang::T('No')}{/if}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Created On')}</b> <span
+                        <b><i class="fa fa-calendar sr-ico"></i> {Lang::T('Created On')}</b> <span
                             class="pull-right">{Lang::dateTimeFormat($d['created_at'])}</span>
                     </li>
                     <li class="list-group-item">
-                        <b>{Lang::T('Last Login')}</b> <span
+                        <b><i class="fa fa-clock-o sr-ico"></i> {Lang::T('Last Login')}</b> <span
                             class="pull-right">{Lang::dateTimeFormat($d['last_login'])}</span>
                     </li>
                     {if $d['coordinates']}
                         <li class="list-group-item">
-                            <b>{Lang::T('Coordinates')}</b> <span class="pull-right">
+                            <b><i class="fa fa-map-marker sr-ico"></i> {Lang::T('Coordinates')}</b> <span class="pull-right">
                                 <i class="glyphicon glyphicon-road"></i> <a style="color: black;"
                                     href="https://www.google.com/maps/dir//{$d['coordinates']}/"
                                     target="_blank">{Lang::T('Get Directions')}</a>
@@ -1099,28 +1148,27 @@
                             </h4>
                             <ul class="list-group list-group-unbordered">
                                 <li class="list-group-item">
-                                    {Lang::T('Active')} <span class="pull-right">{if
-                        $package['status']=='on'}yes{else}no
-                                    {/if}</span>
+                                    <b><i class="fa fa-circle sr-ico"></i> {Lang::T('Active')}</b> <span
+                                        class="pull-right sr-chip {if $package['status']=='on'}sr-chip-ok{else}sr-chip-bad{/if}">{if $package['status']=='on'}{Lang::T('Yes')}{else}{Lang::T('No')}{/if}</span>
                                 </li>
                                 <li class="list-group-item">
-                                    {Lang::T('Type')} <span class="pull-right">
-                                        {if $package['prepaid'] eq yes}Prepaid{else}<b>Postpaid</b>{/if}</span>
+                                    <b><i class="fa fa-tag sr-ico"></i> {Lang::T('Type')}</b> <span class="pull-right sr-chip sr-chip-mute">
+                                        {if $package['prepaid'] eq yes}{Lang::T('Prepaid')}{else}{Lang::T('Postpaid')}{/if}</span>
                                 </li>
                                 <li class="list-group-item">
-                                    {Lang::T('Bandwidth')} <span class="pull-right">
+                                    <b><i class="fa fa-dashboard sr-ico"></i> {Lang::T('Bandwidth')}</b> <span class="pull-right sr-chip sr-chip-mono">
                                         {$package['name_bw']}</span>
                                 </li>
                                 <li class="list-group-item">
-                                    {Lang::T('Created On')} <span
+                                    <b><i class="fa fa-calendar sr-ico"></i> {Lang::T('Created On')}</b> <span
                                         class="pull-right">{Lang::dateAndTimeFormat($package['recharged_on'],$package['recharged_time'])}</span>
                                 </li>
                                 <li class="list-group-item">
-                                    {Lang::T('Expires On')} <span class="pull-right">{Lang::dateAndTimeFormat($package['expiration'],
+                                    <b><i class="fa fa-hourglass-end sr-ico"></i> {Lang::T('Expires On')}</b> <span class="pull-right sr-chip sr-chip-money">{Lang::dateAndTimeFormat($package['expiration'],
                         $package['time'])}</span>
                                 </li>
                                 <li class="list-group-item">
-                                    {$package['routers']} <span class="pull-right">{$package['method']}</span>
+                                    <b><i class="fa fa-server sr-ico"></i> {$package['routers']}</b> <span class="pull-right sr-chip sr-chip-mono">{$package['method']}</span>
                                 </li>
                             </ul>
                             <div class="row" style="margin-bottom: 10px;">
