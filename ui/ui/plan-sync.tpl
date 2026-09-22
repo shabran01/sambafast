@@ -127,6 +127,7 @@ $(document).ready(function() {
     let offset = 0;
     let totalUsers = {$totalUsers};
     let isSyncing = false;
+    let timeoutRetries = 0;
     let selectedRouter = '{$syncRouter|escape:"javascript"}';
     let selectedType = '{$syncType|escape:"javascript"}';
     
@@ -134,7 +135,7 @@ $(document).ready(function() {
     $('#routerSelect, #typeSelect').on('change', function() {
         selectedRouter = $('#routerSelect').length ? $('#routerSelect').val() : selectedRouter;
         selectedType = $('#typeSelect').length ? $('#typeSelect').val() : selectedType;
-        let countParams = { offset: 0, limit: 0, count_only: 1 };
+        let countParams = { offset: 0, limit: 0, count_only: 1, csrf_token: '{$csrf_token}' };
         if (selectedRouter) { countParams.router = selectedRouter; }
         if (selectedType) { countParams.type = selectedType; }
         $.getJSON('{$_url}plan/sync-process', countParams)
@@ -180,7 +181,7 @@ $(document).ready(function() {
     
     function syncNextBatch() {
         console.log('Starting syncNextBatch, offset:', offset);
-        let ajaxData = { offset: offset };
+        let ajaxData = { offset: offset, csrf_token: '{$csrf_token}' };
         if (selectedRouter) { ajaxData.router = selectedRouter; }
         if (selectedType) { ajaxData.type = selectedType; }
         $.ajax({
@@ -188,10 +189,14 @@ $(document).ready(function() {
             method: 'GET',
             data: ajaxData,
             dataType: 'json',
-            timeout: 60000, // 60 seconds timeout per batch
+            timeout: 330000, // Must exceed the server's set_time_limit(300). A dead
+                             // router costs ~19s per customer, so a batch of 10 can
+                             // take ~190s - the old 60s guarantee made the browser
+                             // time out and replay batches that were still running.
             success: function(response) {
                 console.log('AJAX success:', response);
                 if (response.success) {
+                    timeoutRetries = 0; // a batch got through - reset the retry budget
                     // Sync totalUsers from server (handles router filter applied after page load)
                     totalUsers = response.stats.total;
                     $('#totalUsersLabel').text(totalUsers);
@@ -257,9 +262,17 @@ $(document).ready(function() {
                 console.log('Response text:', xhr.responseText);
                 let errorMsg = 'Connection error: ';
                 if (status === 'timeout') {
-                    errorMsg += 'Request timeout. Will retry...';
-                    // Retry after timeout
-                    setTimeout(syncNextBatch, 2000);
+                    // Only devices that implement sync_customer() are idempotent, so
+                    // replaying the same offset can re-sync the same customers and
+                    // double-count them. Cap the retries, then stop and report the
+                    // offset instead of looping forever with the UI locked.
+                    timeoutRetries++;
+                    if (timeoutRetries <= 2) {
+                        $('#statusMessage').html('<i class="fa fa-spinner fa-spin"></i> Batch at offset ' + offset + ' timed out. Retrying (' + timeoutRetries + ' of 2)&hellip;');
+                        setTimeout(syncNextBatch, 2000);
+                    } else {
+                        showError('Batch at offset ' + offset + ' timed out 3 times, so the sync was stopped. Nothing was skipped - re-run Sync to continue from that offset.');
+                    }
                 } else {
                     errorMsg += error;
                     showError(errorMsg);

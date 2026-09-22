@@ -83,12 +83,26 @@ switch ($action) {
         $ui->assign('allRouters', $allRouters);
         $ui->assign('syncRouter', $syncRouter);
         $ui->assign('syncType', $syncType);
+        // sync-process mutates routers, so the page hands the token to every batch
+        // request. Csrf::check() does not consume the token, so one token covers the
+        // whole run (it expires after 30 minutes).
+        $ui->assign('csrf_token', Csrf::generateAndStoreToken());
         $ui->display('plan-sync.tpl');
         break;
         
     case 'sync-process':
         if (!in_array($admin['user_type'], ['SuperAdmin', 'Admin'])) {
             die(json_encode(['success' => false, 'message' => 'Unauthorized - Viewer role has read-only access']));
+        }
+
+        // This endpoint logs into routers and rewrites customer profiles over a plain
+        // GET, so it needs the same CSRF protection as other admin actions. Without it
+        // any page an authenticated admin visits could trigger a sync via an <img> tag.
+        // Csrf::check() is a no-op unless csrf_enabled is 'yes', and it does not consume
+        // the token, so the many batch requests of one run all validate.
+        if (!Csrf::check(isset($_REQUEST['csrf_token']) ? $_REQUEST['csrf_token'] : '')) {
+            header('Content-Type: application/json');
+            die(json_encode(['success' => false, 'message' => 'Invalid or expired CSRF token']));
         }
 
         $filterRouter = isset($_GET['router']) ? trim($_GET['router']) : '';
@@ -106,7 +120,10 @@ switch ($action) {
             die(json_encode(['success' => true, 'stats' => ['total' => $cq->count()]]));
         }
 
-        set_time_limit(120);
+        // A dead router costs ~19s per customer (3 connect attempts x 5s + 2s delays),
+        // so a full batch of 10 can take ~190s. The old 120s limit killed the request
+        // mid-batch, which is what made the browser time out and replay the batch.
+        set_time_limit(300);
         $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
         $limit = 10;
 
@@ -118,7 +135,9 @@ switch ($action) {
         if ($filterType !== '') {
             $tursQuery->where('type', $filterType);
         }
-        $turs = $tursQuery->limit($limit)->offset($offset)->find_many();
+        // Offset paging needs a deterministic order. Without one MySQL is free to
+        // return rows in any order, so customers could be skipped or synced twice.
+        $turs = $tursQuery->order_by_asc('id')->limit($limit)->offset($offset)->find_many();
 
         $results = [];
         $success = 0;
@@ -143,10 +162,22 @@ switch ($action) {
                     if (file_exists($dvc)) {
                         require_once $dvc;
                         $device = new $p['device'];
-                        if (method_exists($device, 'add_customer')) {
-                            $device->add_customer($c, $p);
-                            $results[] = ['username' => $tur['username'], 'status' => 'success', 'message' => 'Synced', 'plan' => $tur['namebp'], 'router' => $tur['routers']];
-                            $success++;
+                        // Prefer sync_customer() where the device provides it: it re-points
+                        // the existing user at the plan's profile. add_customer() instead
+                        // deletes the user and re-adds them, which disconnects an online
+                        // customer and resets their counters.
+                        $syncMethod = method_exists($device, 'sync_customer') ? 'sync_customer' : 'add_customer';
+                        if (method_exists($device, $syncMethod)) {
+                            // These return false when the router is unreachable or rejected
+                            // the change. Ignoring that reported every customer as "Synced"
+                            // even when nothing had reached the router.
+                            if ($device->$syncMethod($c, $p) === false) {
+                                $results[] = ['username' => $tur['username'], 'status' => 'error', 'message' => 'Router unreachable or refused the sync', 'plan' => $tur['namebp'], 'router' => $tur['routers']];
+                                $errors++;
+                            } else {
+                                $results[] = ['username' => $tur['username'], 'status' => 'success', 'message' => 'Synced', 'plan' => $tur['namebp'], 'router' => $tur['routers']];
+                                $success++;
+                            }
                         } else {
                             $results[] = ['username' => $tur['username'], 'status' => 'error', 'message' => 'Method missing'];
                             $errors++;
@@ -173,7 +204,9 @@ switch ($action) {
             $totalCountQuery->where('type', $filterType);
         }
         $totalUsers = $totalCountQuery->count();
-        $hasMore = ($offset + $limit) < $totalUsers;
+        // Use the real batch size rather than the requested limit: the caller advances
+        // its offset by stats.processed, so hasMore has to be measured the same way.
+        $hasMore = ($offset + count($turs)) < $totalUsers;
 
         header('Content-Type: application/json');
         echo json_encode([

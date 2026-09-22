@@ -58,6 +58,21 @@ document.addEventListener('DOMContentLoaded', function() {
 <script id="md-source" type="text/markdown">
  # CHANGELOG
 
+## [2.2.29] - 2026-09-22
+
+---
+
+### FIXED: Plan Sync Could Disconnect Customers, Report False Success and Replay Batches
+
+**`system/controllers/plan.php` + `ui/ui/plan-sync.tpl`**
+
+- **False success.** `plan/sync-process` called `$device->add_customer()` and ignored its return value, then recorded `status => 'success'` unconditionally. `add_customer()` returns `false` when the router is unreachable or the change is rejected, so a router that was down still produced a green "Synced" for every customer in the batch. The return value is now honoured, and failures are reported per customer as "Router unreachable or refused the sync".
+- **Destructive sync.** `add_customer()` deletes the hotspot user together with their active session and then re-adds them, so every online customer in a sync was disconnected and had their counters reset. `sync_customer()`, which exists on both device classes and simply re-points the existing user at the plan's profile, had no call sites anywhere in the codebase. `sync-process` now prefers it and falls back to `add_customer()` only when the device does not provide one (`MikrotikPppoe::sync_customer()` delegates to `add_customer()`, so PPPoE behaviour is unchanged).
+- **Unstable paging.** The batch query used `limit(10)->offset($n)` with no `ORDER BY`, so MySQL was free to return rows in any order and customers could be skipped or synced twice between batches. It is now ordered by `id`.
+- **`hasMore` mismatch.** The flag was computed from the requested `limit` rather than the rows actually returned, while the caller advances its offset by `stats.processed`. It now uses the real batch size.
+- **Unbounded timeout replay.** On a client timeout the page re-requested the same offset with no retry cap, and the UI stayed locked if that kept happening. The arithmetic made this near-certain: `MikrotikHotspot::getClient()` makes 3 connect attempts of 5s with 2s delays, so a dead router costs ~19s per customer and a batch of 10 needs ~190s \u2014 against a 60s client timeout and a 120s `set_time_limit`. The server limit is now 300s, the client timeout 330s so that it exceeds the server, and retries are capped at 2 before stopping with the offset and a hint on how to resume.
+- **Missing CSRF protection.** The endpoint rewrites router state over a plain GET, so any page an authenticated admin visited could trigger a sync with an `<img>` tag. It now validates a CSRF token, which `plan/sync` supplies to every batch request. `Csrf::check()` does not consume the token, so one token covers a whole run, and the check remains a no-op unless `csrf_enabled` is `yes`.
+
 ## [2.2.28] - 2026-09-22
 
 ---
