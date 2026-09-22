@@ -2,6 +2,20 @@
 
  # CHANGELOG
 
+## [2.2.28] - 2026-09-22
+
+---
+
+### CHANGED: Sub District / Ward removed from Administrator forms
+
+**`ui/ui/admin-add.tpl` + `admin-edit.tpl` + `admin-view.tpl` + `admin.tpl` + `system/controllers/settings.php`**
+
+- The Administrator add/edit forms drop the **Sub District** and **Ward** inputs; the address row keeps **City**, which now spans the full width of the form group.
+- The Administrator detail page no longer shows Sub District or Ward rows — neither for the account itself nor for the linked Sales agent panel.
+- The administrator list no longer renders `city, subdistrict, ward`; it shows the city only, so there is no stray `, ,` left behind.
+- `settings.php` no longer reads `subdistrict` / `ward` from POST and no longer writes those columns on add or edit, so saving a user can never blank out legacy values.
+- Mirrors 2.2.06, which removed District / State / Zip from the customer forms. Existing `tbl_users.subdistrict` and `ward` values are left untouched in the database — the columns are simply no longer displayed or written.
+
 ## [2.2.27] - 2026-09-22
 
 ---

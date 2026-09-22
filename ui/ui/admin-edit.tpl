@@ -51,17 +51,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-4">
+                        <div class="col-md-12">
                             <input type="text" class="form-control" id="city" name="city"
                                 placeholder="{Lang::T('City')}" value="{$d['city']}" {if $isViewer}readonly{/if}>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="subdistrict" name="subdistrict"
-                                placeholder="{Lang::T('Sub District')}" value="{$d['subdistrict']}" {if $isViewer}readonly{/if}>
-                        </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="ward" name="ward"
-                                placeholder="{Lang::T('Ward')}" value="{$d['ward']}" {if $isViewer}readonly{/if}>
                         </div>
                     </div>
                 </div>

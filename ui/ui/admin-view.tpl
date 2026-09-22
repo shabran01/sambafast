@@ -28,12 +28,6 @@
                                 <b>{Lang::T('City')}</b> <span class="pull-right">{$d['city']}</span>
                             </li>
                             <li class="list-group-item">
-                                <b>{Lang::T('Sub District')}</b> <span class="pull-right">{$d['subdistrict']}</span>
-                            </li>
-                            <li class="list-group-item">
-                                <b>{Lang::T('Ward')}</b> <span class="pull-right">{$d['ward']}</span>
-                            </li>
-                            <li class="list-group-item">
                                 <b>{Lang::T('User Type')}</b> <span class="pull-right">{$d['user_type']}</span>
                             </li>
                         </ul>
@@ -64,12 +58,6 @@
                                 </li>
                                 <li class="list-group-item">
                                     <b>{Lang::T('City')}</b> <span class="pull-right">{$agent['city']}</span>
-                                </li>
-                                <li class="list-group-item">
-                                    <b>{Lang::T('Sub District')}</b> <span class="pull-right">{$agent['subdistrict']}</span>
-                                </li>
-                                <li class="list-group-item">
-                                    <b>{Lang::T('Ward')}</b> <span class="pull-right">{$agent['ward']}</span>
                                 </li>
                             </ul>
                         </div>

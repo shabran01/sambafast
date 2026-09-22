@@ -51,7 +51,7 @@
                                     <td>{$ds['phone']}</td>
                                     <td>{$ds['email']}</td>
                                     <td>{$ds['user_type']}</td>
-                                    <td>{$ds['city']}, {$ds['subdistrict']}, {$ds['ward']}</td>
+                                    <td>{$ds['city']}</td>
                                     <td>{if $ds['root']}
                                         <a href="{$_url}settings/users-view/{$ds['root']}">
                                         {$admins[$ds['root']]}</a>{/if}</td>

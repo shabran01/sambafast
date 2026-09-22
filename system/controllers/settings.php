@@ -584,8 +584,6 @@ switch ($action) {
         $phone = _post('phone');
         $email = _post('email');
         $city = _post('city');
-        $subdistrict = _post('subdistrict');
-        $ward = _post('ward');
         $send_notif = _post('send_notif');
         $root = _post('root');
         $msg = '';
@@ -615,8 +613,6 @@ switch ($action) {
             $d->phone = $phone;
             $d->email = $email;
             $d->city = $city;
-            $d->subdistrict = $subdistrict;
-            $d->ward = $ward;
             $d->status = 'Active';
             $d->creationdate = $date_now;
             if ($admin['user_type'] == 'Agent') {
@@ -658,8 +654,6 @@ switch ($action) {
         $phone = _post('phone');
         $email = _post('email');
         $city = _post('city');
-        $subdistrict = _post('subdistrict');
-        $ward = _post('ward');
         $status = _post('status');
         $root = _post('root');
         $msg = '';
@@ -774,8 +768,6 @@ switch ($action) {
             $d->phone = $phone;
             $d->email = $email;
             $d->city = $city;
-            $d->subdistrict = $subdistrict;
-            $d->ward = $ward;
             if (isset($_POST['status'])) {
                 $d->status = $status;
             }

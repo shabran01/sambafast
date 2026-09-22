@@ -27,14 +27,8 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-md-4">
+                        <div class="col-md-12">
                             <input type="text" class="form-control" id="city" name="city" placeholder="{Lang::T('City')}">
-                        </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="subdistrict" name="subdistrict" placeholder="{Lang::T('Sub District')}">
-                        </div>
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" id="ward" name="ward" placeholder="{Lang::T('Ward')}">
                         </div>
                     </div>
                 </div>
