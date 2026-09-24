@@ -58,6 +58,21 @@ document.addEventListener('DOMContentLoaded', function() {
 <script id="md-source" type="text/markdown">
  # CHANGELOG
 
+## [2.2.35] - 2026-09-24
+
+---
+
+### FIXED: Voucher Activations Recorded as Zero, Hiding Them From Income Today
+
+**`system/autoload/Package.php`**, **`fix_voucher_prices.php`**
+
+- Voucher activations were written to `tbl_transactions` with `price = 0`, under the comment "voucher activations should not add to revenue". `tbl_transactions` is the single ledger that both the **Activation Reports** table and the dashboard **Income Today** figure read, so every redeemed voucher showed `0` in the Plan Price column and none of the takings reached Income Today.
+- It also meant voucher money was recorded nowhere at all: issuing vouchers only inserts rows into `tbl_voucher` and never writes a transaction, so if the redemption did not carry the value, no part of the system held it.
+- Both branches of `Package::rechargeUser` (renewing an existing session, and first activation) now store the plan price on voucher transactions.
+- Only the plan price is stored. Additional per-customer bills are deliberately not added, because a voucher is worth the price printed on it.
+- `fix_voucher_prices.php` backfills activations that were already saved as `0`. It resolves the price from the plan the voucher belongs to, preferring an exact plan on the same router and falling back to the plan name alone. It is a **dry run by default** and prints every row it would change; writing needs `--apply` on the CLI or `?apply=1&confirm=yes` in a browser. It is idempotent, skips genuinely free plans, and lists any rows whose plan can no longer be found instead of guessing. Delete the file once it has run.
+- Rows written before this version stay at `0` until that backfill is run, so run it once to bring the older history in line.
+
 ## [2.2.34] - 2026-09-24
 
 ---

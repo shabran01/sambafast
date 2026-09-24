@@ -351,8 +351,14 @@ class Package
             $t->username = $c['username'];
             $t->plan_name = $p['name_plan'];
             if ($gateway == 'Voucher') {
-                //voucher activations should not add to revenue
-                $t->price = 0;
+                // A voucher is stock that was paid for when it was issued, but
+                // issuing stock never writes a transaction, so redemption is
+                // the only place this revenue can be captured. tbl_transactions
+                // is the ledger the activation report and the dashboard Income
+                // Today figures both read, so writing 0 here made every voucher
+                // activation show a blank price and kept the takings out of
+                // Income Today.
+                $t->price = $p['price'];
             } else {
                 if ($p['validity_unit'] == 'Period') {
                     // Postpaid price from field
@@ -466,8 +472,10 @@ class Package
             $t->username = $c['username'];
             $t->plan_name = $p['name_plan'];
             if ($gateway == 'Voucher') {
-                $t->price = 0;
-                // voucher activations should not add to revenue
+                // Same as the renewal branch above: record the plan price so the
+                // activation shows its value in the reports and counts towards
+                // Income Today.
+                $t->price = $p['price'];
             } else {
                 if ($p['validity_unit'] == 'Period') {
                     // Postpaid price always zero for first time
