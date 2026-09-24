@@ -58,6 +58,19 @@ document.addEventListener('DOMContentLoaded', function() {
 <script id="md-source" type="text/markdown">
  # CHANGELOG
 
+## [2.2.33] - 2026-09-24
+
+---
+
+### CHANGED: "Already Have an Active Package?" Login Form Hidden on the Hotspot Page
+
+**`system/plugin/download.php`**
+
+- The login card (account-number field and Connect button) is no longer visible to customers, and the **Already Have an Active Package?** shortcut button was removed from the button stack. What remains on the page is **Redeem Voucher** and the **FREE TRIAL 10 MINS** link.
+- It is **hidden, not deleted, and that distinction matters**: this form is the page's login mechanism. The JavaScript submits `#loginForm` to the hotspot login endpoint to sign the customer in automatically after a successful M-Pesa payment, a voucher redemption and a reconnect, and `#usernameInput` holds the account id that the payment-status polling is keyed on. Deleting the markup would have broken all four flows, so the container is hidden with `display:none` and the elements stay in the DOM.
+- A hidden form still submits normally, so every automatic sign-in keeps working; only the manual entry point is gone.
+- Also fixed a pre-existing console error: the `DOMContentLoaded` handler for `#submitBtnTop` called `addEventListener` on a null reference, because no element with that id has ever existed on this page. It is now guarded with `if (!submitBtnTop) return;`.
+
 ## [2.2.32] - 2026-09-24
 
 ---

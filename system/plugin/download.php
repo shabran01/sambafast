@@ -458,9 +458,6 @@ $htmlContent .= "                            <path stroke-linecap=\"round\" stro
 $htmlContent .= "                        </svg>\n";
 $htmlContent .= "                        Redeem Voucher\n";
 $htmlContent .= "                    </button>\n";
-$htmlContent .= "                    <button type=\"button\" class=\"btn-3d btn-3d-green flex items-center justify-center gap-2 rounded-lg px-8 py-3 text-center text-sm font-semibold text-white outline-none md:text-base\" onclick=\"document.getElementById('submitBtn').click()\">\n";
-$htmlContent .= "                        Already Have an Active Package?\n";
-$htmlContent .= "                    </button>\n";
 $htmlContent .= "                </div>\n";
 $htmlContent .= "            </div>\n";
 $htmlContent .= "        </div>\n";
@@ -483,7 +480,13 @@ $htmlContent .= "             exists, so populateCards() returns early and rende
 $htmlContent .= "             packages again, restore this container - the renderer is still here. -->\n";
 $htmlContent .= "    </div>\n";
 
-$htmlContent .= "    <div class=\"container mx-auto px-4 mb-4\">\n";
+$htmlContent .= "    <!-- Hidden on purpose - NOT removed. This form is the page's login mechanism:\n";
+$htmlContent .= "         the JS submits #loginForm to the hotspot login endpoint to auto-log the\n";
+$htmlContent .= "         customer in after a successful M-Pesa payment, a voucher redemption or a\n";
+$htmlContent .= "         reconnect, and reads #usernameInput as the state for the payment-status\n";
+$htmlContent .= "         polling. Deleting the markup would break all of those, so it stays in the\n";
+$htmlContent .= "         DOM and is only hidden here. -->\n";
+$htmlContent .= "    <div class=\"container mx-auto px-4 mb-4\" style=\"display:none;\">\n";
 $htmlContent .= "        <div class=\"max-w-md mx-auto bg-white rounded-lg overflow-hidden md:max-w-lg\">\n";
 $htmlContent .= "            <div class=\"md:flex\">\n";
 $htmlContent .= "                <div class=\"w-full p-5\">\n";
@@ -923,6 +926,9 @@ $htmlContent .= "<script>\n";
 $htmlContent .= "document.addEventListener('DOMContentLoaded', function() {\n";
 $htmlContent .= "     // Ensure the top button is correctly targeted by its ID.\n";
 $htmlContent .= "     var submitBtnTop = document.getElementById('submitBtnTop');\n";
+$htmlContent .= "     // There is no #submitBtnTop in this page, so without this guard the line below\n";
+$htmlContent .= "     // threw 'Cannot read properties of null' on every load of the hotspot page.\n";
+$htmlContent .= "     if (!submitBtnTop) return;\n";
 $htmlContent .= "     \n";
 $htmlContent .= "     // Add a click event listener to the top \"Connect\" button.\n";
 $htmlContent .= "     submitBtnTop.addEventListener('click', function(event) {\n";
