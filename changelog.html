@@ -58,6 +58,20 @@ document.addEventListener('DOMContentLoaded', function() {
 <script id="md-source" type="text/markdown">
  # CHANGELOG
 
+## [2.2.31] - 2026-09-24
+
+---
+
+### CHANGED: Prices Hidden from Customers on the Hotspot Page
+
+**`system/plugin/download.php`**
+
+- The hotspot plan cards no longer display a price. Each card keeps its plan name, the MOST POPULAR badge and the validity line, so the customer chooses by what they get rather than by what it costs.
+- The payment confirmation dialog no longer states the amount either — it now reads "Enter your Mpesa number below and click **Pay Now** to initialize the payment". If you would rather the customer still saw the figure at the moment of paying, that single line is easy to restore.
+- The now-unused price plumbing went with it: the `price` argument on the Buy button, the third parameter of `handlePhoneNumberSubmission()`, and the fallback that scraped the figure out of the card's DOM (which also depended on the implicit global `event`).
+- Nothing about payment changed. The `grant` request sends only `{phone_number, plan_id, router_id, account_id}` — the amount has always been resolved server-side from the plan — so `price` in the page was display-only.
+- Prices remain in `tbl_plans` and are still returned by the `plugin/hotspot_plan` endpoint; only the customer-facing display has gone.
+
 ## [2.2.30] - 2026-09-22
 
 ---
