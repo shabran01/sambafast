@@ -458,6 +458,9 @@ $htmlContent .= "                            <path stroke-linecap=\"round\" stro
 $htmlContent .= "                        </svg>\n";
 $htmlContent .= "                        Redeem Voucher\n";
 $htmlContent .= "                    </button>\n";
+$htmlContent .= "                    <button type=\"button\" class=\"btn-3d btn-3d-green flex items-center justify-center gap-2 rounded-lg px-8 py-3 text-center text-sm font-semibold text-white outline-none md:text-base\" onclick=\"document.getElementById('submitBtn').click()\">\n";
+$htmlContent .= "                        Already Have an Active Package?\n";
+$htmlContent .= "                    </button>\n";
 $htmlContent .= "                </div>\n";
 $htmlContent .= "            </div>\n";
 $htmlContent .= "        </div>\n";

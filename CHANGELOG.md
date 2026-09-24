@@ -2,6 +2,19 @@
 
  # CHANGELOG
 
+## [2.2.34] - 2026-09-24
+
+---
+
+### CHANGED: "Already Have an Active Package?" Button Restored Above the Plans
+
+**`system/plugin/download.php`**
+
+- The **Already Have an Active Package?** button is back in the top button stack, directly below **Redeem Voucher**, so the two shortcut buttons sit together again as they did before 2.2.33.
+- The login card it drives stays hidden — this change is only about the button being visible and in that position.
+- Worth knowing how the two interact: the button's `onclick` is `document.getElementById('submitBtn').click()`, and `#submitBtn` lives inside that hidden card. A programmatic click still fires, and it submits the hidden `#loginForm` to the hotspot login endpoint using whatever `#usernameInput` holds — which is auto-filled from the `accountid` cookie. So for a returning customer whose device already carries that cookie the button signs them straight in; for a first-time visitor there is nothing to submit, because the field they would type into is hidden.
+- If the button should work for everyone, the two obvious options are to reveal the hidden card when it is pressed, or to prompt for the account number in a dialog. Neither is included here.
+
 ## [2.2.33] - 2026-09-24
 
 ---
