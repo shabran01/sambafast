@@ -58,6 +58,20 @@ document.addEventListener('DOMContentLoaded', function() {
 <script id="md-source" type="text/markdown">
  # CHANGELOG
 
+## [2.2.32] - 2026-09-24
+
+---
+
+### CHANGED: Hotspot Page No Longer Lists Packages, and the Phone Reconnect Button Is Gone
+
+**`system/plugin/download.php`**
+
+- The package grid (`#cards-container`) is no longer rendered, so customers no longer see the 5-Hours / 24-Hours / 7-Days / 30-Days cards. What remains is **Redeem Voucher**, **Already Have an Active Package?** (the account login form) and the **FREE TRIAL 10 MINS** link.
+- The **Reconnect with Phone Number** button was removed from the button stack.
+- The card renderer was deliberately left in place: `populateCards()` now returns early because the container is absent, so showing the packages again is a matter of restoring the container markup rather than rewriting the renderer. The company-name and customer-care updates still happen, since those assignments run before the early return.
+- Worth knowing: `reconnectWithNumber()` and the `reconnect_phone` POST handler are still in the file but unreferenced from the UI. The endpoint stays directly reachable by POST, so it can be deleted as well if the capability should be gone rather than just hidden.
+- Customers can no longer buy a package from this page at all - purchases now go through vouchers. Say the word if that was not the intent.
+
 ## [2.2.31] - 2026-09-24
 
 ---
